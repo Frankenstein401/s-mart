@@ -28,12 +28,43 @@ export class UserService {
     return newUser;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAllUser(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+
+    const [users, totalData] = await Promise.all([
+      this.prisma.user.findMany({
+        skip: skip,
+        take: limit,
+        orderBy: {
+          createdAt: 'desc'
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+        }
+      }),
+      this.prisma.user.count(),
+    ])
+
+    return {
+      data: users,
+      meta: {
+        totalData: totalData,
+        currentPage: page,
+        limit: limit,
+        totalPage: Math.ceil(totalData / limit)
+      }
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOneUser(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: email }
+    });
+
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

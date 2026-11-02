@@ -14,12 +14,12 @@ export class UserController {
 
   @Get()
   findAll() {
-    return this.userService.findAll();
+    return this.userService.findAllUser();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @Get(':email')
+  findOne(@Param('email') email: string) {
+    return this.userService.findOneUser(email);
   }
 
   @Patch(':id')
